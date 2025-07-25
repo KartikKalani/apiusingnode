@@ -1,0 +1,21 @@
+DROP TABLE IF EXISTS user_connections;
+DROP TABLE IF EXISTS pusers;
+
+-- Create pusers table with id as TEXT
+
+CREATE TABLE pusers (
+    id TEXT PRIMARY KEY,
+    username TEXT NOT NULL UNIQUE
+);
+
+-- Create user_connections table referencing pusers(id)
+
+CREATE TABLE user_connections (
+    user_id_1 TEXT NOT NULL,
+    user_id_2 TEXT NOT NULL,
+    connected_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id_1, user_id_2),
+    FOREIGN KEY (user_id_1) REFERENCES pusers(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id_2) REFERENCES pusers(id) ON DELETE CASCADE,
+    CHECK (user_id_1 < user_id_2)  -- to avoid duplicates and self-connections
+);
