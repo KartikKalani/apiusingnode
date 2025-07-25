@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Create User</title>
+</head>
+
+<body>
+    <h1>Create New User</h1>
+    <form id="userForm">
+        <label for="user_strt_id">User ID:</label><br />
+        <input type="text" id="user_strt_id" name="user_strt_id" required /><br /><br />
+
+        <label for="display_name">Display Name:</label><br />
+        <input type="text" id="display_name" name="display_name" required /><br /><br />
+
+        <button type="submit">Create User</button>
+    </form>
+
+    <p id="responseMsg"></p>
+
+    <script>
+        const form = document.getElementById('userForm');
+        const responseMsg = document.getElementById('responseMsg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const user_strt_id = form.user_strt_id.value.trim();
+            const display_name = form.display_name.value.trim();
+
+            if (!user_strt_id || !display_name) {
+                responseMsg.textContent = 'Please fill both fields.';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:3000/api/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ user_strt_id, display_name })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    responseMsg.style.color = 'green';
+                    responseMsg.textContent = `User created! ID: ${data.user.id}, Username: ${data.user.username}`;
+                    form.reset();
+                } else {
+                    responseMsg.style.color = 'red';
+                    responseMsg.textContent = `Error: ${data.error || 'Unknown error'}`;
+                }
+            } catch (err) {
+                responseMsg.style.color = 'red';
+                responseMsg.textContent = 'Network error or server not running.';
+            }
+        });
+    </script>
+</body>
+
+</html>
